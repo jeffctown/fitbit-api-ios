@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		DF55A3FF1F2C10F600EEA4E7 /* Fitbit.h in Headers */ = {isa = PBXBuildFile; fileRef = DF55A3FD1F2C10F600EEA4E7 /* Fitbit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DF55A40E1F2C1A7600EEA4E7 /* FitBitApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF55A40D1F2C1A7600EEA4E7 /* FitBitApi.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		DF55A3FA1F2C10F600EEA4E7 /* Fitbit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fitbit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF55A3FD1F2C10F600EEA4E7 /* Fitbit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fitbit.h; sourceTree = "<group>"; };
 		DF55A3FE1F2C10F600EEA4E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DF55A40D1F2C1A7600EEA4E7 /* FitBitApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FitBitApi.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +49,7 @@
 			isa = PBXGroup;
 			children = (
 				DF55A3FD1F2C10F600EEA4E7 /* Fitbit.h */,
+				DF55A40D1F2C1A7600EEA4E7 /* FitBitApi.swift */,
 				DF55A3FE1F2C10F600EEA4E7 /* Info.plist */,
 			);
 			path = Fitbit;
@@ -96,6 +99,7 @@
 					DF55A3F91F2C10F600EEA4E7 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = NTX63W5EU6;
+						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -132,6 +136,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF55A40E1F2C1A7600EEA4E7 /* FitBitApi.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,6 +247,7 @@
 		DF55A4031F2C10F600EEA4E7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = NTX63W5EU6;
@@ -254,6 +260,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jefflett.Fitbit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -261,6 +268,7 @@
 		DF55A4041F2C10F600EEA4E7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = NTX63W5EU6;
@@ -296,6 +304,7 @@
 				DF55A4041F2C10F600EEA4E7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
