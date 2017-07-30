@@ -26,6 +26,42 @@ public struct FitBitApiConfig {
     }
 }
 
+public enum MealType: Int {
+    case breakfast = 1
+    case morningSnack = 2
+    case lunch = 3
+    case afternoonSnack = 4
+    case dinner = 5
+    case anytime = 7
+}
+
+public struct FoodItem {
+    var id: String?
+    var foodName: String?
+    let mealType: MealType
+    let unit: Int
+    let amount: Float
+    let date: Date
+    var calories: Int?
+    
+    public init(id: String, mealType: MealType, unit: Int, amount: Float, date: Date = Date()) {
+        self.id = id
+        self.mealType = mealType
+        self.unit = unit
+        self.amount = amount
+        self.date = date
+    }
+    
+    public init(name: String, mealType: MealType, unit: Int, amount: Float, calories: Int, date: Date = Date()) {
+        self.foodName = name
+        self.mealType = mealType
+        self.unit = unit
+        self.amount = amount
+        self.date = date
+        self.calories = calories
+    }
+}
+
 extension UserDefaults {
     var fitBitToken: String? {
         get { return value(forKeyPath: #function) as? String }
@@ -89,9 +125,47 @@ public class FitBitApi {
         makeApiCall(url: url, completionHandler: completionHandler, errorHandler: errorHandler)
     }
     
-    public func getDailyActivity(completionHandelr: @escaping ([String: Any]) -> Void, errorHandler: @escaping (Error) -> Void) {
+    public func getDailyActivity(completionHandler: @escaping ([String: Any]) -> Void, errorHandler: @escaping (Error) -> Void) {
         let url = getDailyActivityURL(config: self.config)
-        makeApiCall(url: url, completionHandler: completionHandelr, errorHandler: errorHandler)
+        makeApiCall(url: url, completionHandler: completionHandler, errorHandler: errorHandler)
+    }
+    
+    public func postFoodLogs(foodItem: FoodItem, completionHandler: @escaping ([String: Any]) -> Void, errorHandler: @escaping (Error) -> Void) {
+        var parameters = [String: Any]()
+        parameters["foodId"] = foodItem.id
+        parameters["foodName"] = foodItem.foodName
+        parameters["amount"] = foodItem.amount
+        parameters["mealTypeId"] = foodItem.mealType.rawValue
+        parameters["unitId"] = foodItem.unit
+        parameters["date"] = dateFormatter.string(from: foodItem.date)
+        parameters["calories"] = foodItem.calories
+        
+        let url = postFoodLogsURL(config: self.config)
+        var urlRequest = URLRequest(url: url!)
+        urlRequest.httpMethod = "POST"
+        
+        let body = parameters.map({
+            return "\($0.0)=\($0.1)"
+        }).joined(separator: "&")
+        urlRequest.httpBody = body.data(using: .utf8)
+        
+        urlSession?.dataTask(with: urlRequest) { (data, response, error) in
+            print("error: \(String(describing:error))")
+            print("response: \(String(describing:response))")
+            print("data: \(String(describing:data))")
+            if let error = error {
+                errorHandler(error)
+            } else if let data = data {
+                if let json = try? JSONSerialization.jsonObject(with: data, options: []),
+                    let jsonDictionary = json as? [String: Any] {
+                    completionHandler(jsonDictionary)
+                } else {
+                    errorHandler(FitBitApiError.unableToParse)
+                }
+            } else {
+                errorHandler(FitBitApiError.noData)
+            }
+        }.resume()
     }
     
     public func handle(url: URL) {
@@ -180,9 +254,8 @@ public class FitBitApi {
                 errorHandler(FitBitApiError.noData)
             }
         }.resume()
-
     }
-    
+   
     private func getValue(key: String, url: URL) -> String? {
         guard let urlComponents = URLComponents(string: url.absoluteString) else {
             print("There was a problem getting the components from url: \(url.absoluteString)")
@@ -225,6 +298,7 @@ public class FitBitApi {
         return urlComponents.url
     }
     
+    
     private func getFoodLogsURL(config: FitBitApiConfig) -> URL? {
         
         guard let userId = userId() else {
@@ -241,9 +315,18 @@ public class FitBitApi {
         return urlComponents.url
     }
     
+    private func postFoodLogsURL(config: FitBitApiConfig) -> URL? {
+        //https://api.fitbit.com/1/user/[user-id]/foods/log.json
+        
+        var urlComponents = getBaseURLComponents()
+        
+        urlComponents.path = "/1/user/-/foods/log.json"
+        
+        return urlComponents.url
+        
+    }
+    
     private func getDailyActivityURL(config: FitBitApiConfig) -> URL? {
-        // https://api.fitbit.com/1/user/4729SP   /activities/date/2017-07-29.json
-        // https://api.fitbit.com/1/user/[user-id]/activities/date/[date].json
         
         guard let userId = userId() else {
             print("No UserId found for get daily activity.")
