@@ -83,7 +83,10 @@ public class FitBitApi {
     public enum FitBitApiError: Error {
         case noData
         case unableToParse
+        case notLoggedIn
+        case invalidUrl
     }
+    
     
     // MARK: - Variables
     
@@ -149,10 +152,12 @@ public class FitBitApi {
         }).joined(separator: "&")
         urlRequest.httpBody = body.data(using: .utf8)
         
-        urlSession?.dataTask(with: urlRequest) { (data, response, error) in
-            print("error: \(String(describing:error))")
-            print("response: \(String(describing:response))")
-            print("data: \(String(describing:data))")
+        guard let urlSession = urlSession else {
+            errorHandler(FitBitApiError.notLoggedIn)
+            return
+        }
+        
+        urlSession.dataTask(with: urlRequest) { (data, response, error) in
             if let error = error {
                 errorHandler(error)
             } else if let data = data {
@@ -227,20 +232,19 @@ public class FitBitApi {
     private func makeApiCall(url: URL?, completionHandler: @escaping ([String: Any]) -> Void, errorHandler: @escaping (Error) -> Void) {
         guard let urlSession = urlSession else {
             print("No urlsession!")
+            errorHandler(FitBitApiError.notLoggedIn)
             return
         }
         
         guard let url = url else {
             print("Invalid URL.")
+            errorHandler(FitBitApiError.invalidUrl)
             return
         }
         
         print("url: \(url.absoluteString)")
         
         urlSession.dataTask(with: url) { (data, response, error) in
-            print("error: \(String(describing:error))")
-            print("response: \(String(describing:response))")
-            print("data: \(String(describing:data))")
             if let error = error {
                 errorHandler(error)
             } else if let data = data {
